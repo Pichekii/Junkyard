@@ -1,0 +1,90 @@
+
+The results from the `time' command:
+real	0m0.206s
+user	0m0.120s
+sys	0m0.048s
+
+The test word is: ABAB
+The rank of the word is: 2
+
+********************************************************************************
+
+The results from the `time' command:
+real	0m0.159s
+user	0m0.120s
+sys	0m0.032s
+
+The test word is: AAAB
+The rank of the word is: 1
+
+********************************************************************************
+
+The results from the `time' command:
+real	0m0.173s
+user	0m0.144s
+sys	0m0.032s
+
+The test word is: BAAA
+The rank of the word is: 4
+
+********************************************************************************
+
+The results from the `time' command:
+real	0m0.164s
+user	0m0.108s
+sys	0m0.048s
+
+The test word is: QUESTION
+The rank of the word is: 24572
+
+********************************************************************************
+
+The results from the `time' command:
+real	0m0.175s
+user	0m0.116s
+sys	0m0.052s
+
+The test word is: BOOKKEEPER
+The rank of the word is: 10743
+
+********************************************************************************
+
+The results from the `time' command:
+real	0m0.199s
+user	0m0.116s
+sys	0m0.060s
+
+The test word is: STATIONARILY
+The rank of the word is: 43692493
+
+********************************************************************************
+
+The results from the `time' command:
+real	0m0.196s
+user	0m0.140s
+sys	0m0.044s
+
+The test word is: ANTIROYALIST
+The rank of the word is: 4306927
+
+********************************************************************************
+
+The results from the `time' command:
+real	0m0.175s
+user	0m0.132s
+sys	0m0.036s
+
+The test word is: ELECTROENCEPHALOGRAPH
+The rank of the word is: 4829556395812724
+
+********************************************************************************
+
+The results from the `time' command:
+real	0m0.175s
+user	0m0.132s
+sys	0m0.048s
+
+The test word is: SPECTROHELIOKINEMATOGRAPH
+The rank of the word is: 6129714642500622000000
+
+********************************************************************************

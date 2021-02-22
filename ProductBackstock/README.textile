@@ -1,0 +1,10 @@
+
+h1. Project Description
+
+The following list provides a high level overview of the files/folders found in this project directory:
+* @MavenProject@ - The Maven project for the program.
+* @ProductBackstock_Problem_Statement.pdf@ - The problem statement for the program.
+
+h1. References
+
+# The original post for the problem statement: http://what.thedailywtf.com/t/1-hour-to-test-interns-mettle/3231/9

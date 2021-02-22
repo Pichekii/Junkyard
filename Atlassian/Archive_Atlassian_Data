@@ -1,0 +1,118 @@
+#!/usr/bin/env bash
+
+################################################################################
+#
+# Created On:       25 May 2013
+# Last Modified:    27 June 2013
+#
+# Author(s):        Scott Natelli
+#
+# Creates an archive file (.tar.gz) of the Atlassian software's data directory.
+#
+# Atlassian officially refers to the "data" directory for its products as the
+# "home" directory, however, I refer to the "data" directory as the "data"
+# directory and not the "home" directory.
+#
+################################################################################
+
+########## GLOBAL VARIABLES ####################################################
+
+# @var withSuccess       Status code indictaing success during execution.
+# @var withSeriousIssues Status code indictaing serious trouble during execution.
+declare -i withSuccess=0
+declare -i withSeriousIssues=2
+
+# @var propertiesFile File containing the variable settings for the backup.
+propertiesFile=".Archive_Atlassian_Data.properties"
+
+# @var logDir Path for the log file.
+# @var log    Log file for the script.
+logDir="../log"
+log=${logDir}"/Archive_Atlassian_Data.log.G000"
+
+# @var archiveDir         Path for the backup archive to be created.
+# @var atlassianDataDir   Name of the Atlassian data directory.
+# @var atlassianDataDir   Path to the Atlassian software data directory.
+# @var atlassianSoftware  The name of the product being backed up.
+declare archiveDir
+declare atlassianDataDir
+declare atlassianDataDirPath
+declare atlassianSoftware
+
+########## MAIN ################################################################
+
+# Setting the working directory; necessary if the script is run from cron.
+cd $(dirname $0)
+
+# Import the common ALM functions.
+source ./ALM_Commons
+
+# Check for the log directory.
+if [[ ! -d $logDir ]]; then
+    mkdir $logDir
+fi
+
+# Initialize the log entry.
+lineBreak 90 "*" >> $log
+echo "$(getTimeStamp) INFO  The script is beginning execution." >> $log
+
+# Retrieve the Atlassian information for the back up.
+if [[ ! -e $propertiesFile ]]; then
+    echo "$(getTimeStamp) ERROR The $properties file does not exist." >> $log
+    exit $withSeriousIssues
+else
+    properties=( $(cat $propertiesFile) )
+    atlassianSoftware=${properties[0]}
+    archiveDir=${properties[1]}
+    atlassianDataDir=${properties[2]}
+    atlassianDataDirPath=${properties[3]}
+fi
+
+# Check for the Atlassian software data directory.
+if [[ ! -d $atlassianDataDirPath ]]; then
+    echo "$(getTimeStamp) ERROR The $atlassianDataDirPath directory does not exist." >> $log
+    echo "$(getTimeStamp) ERROR This directory contains critical configuration data." >> $log
+    exit $withSeriousIssues
+fi
+
+# Check that the archive directory for the backups exists.
+if [[ ! -d $archiveDir ]]; then
+    echo "$(getTimeStamp) INFO  The $archiveDir directory does not exist." >> $log
+    echo "$(getTimeStamp) INFO  Creating the $archiveDir for the backups." >> $log
+    exitCode=$(mkdir $archiveDir)
+    
+    if [[ $exitCode -eq 0 ]]; then
+        echo "$(getTimeStamp) INFO  Successfully created the archive directory." >> $log
+    else
+        echo "$(getTimeStamp) ERROR Could not create the archive directory." >> $log
+        echo "$(getTimeStamp) ERROR \`mkdir' exited with return code: $exitCode" >> $log
+        exit $withSeriousIssues
+    fi
+fi
+
+# Generate the name for the archive.
+dateStamp=$(date +"%Y%m%d%H%M%S")
+atlassianArchive="atlassian-"${atlassianSoftware}"-data-"${dateStamp}".tar.gz"
+
+# Create a backup archive of the data directory.
+echo "$(getTimeStamp) INFO  Creating the backup archive for: $atlassianDataDirPath/$atlassianDataDir" >> $log
+exitCode=$(tar -cpz -f $archiveDir/$atlassianArchive -C $atlassianDataDirPath $atlassianDataDir >> $log)
+
+if [[ $exitCode -eq 0 ]]; then
+    echo "$(getTimeStamp) INFO  Successfully created the data directory backup archive." >> $log
+else
+    echo "$(getTimeStamp) ERROR Could not create the data directory backup archive." >> $log
+    echo "$(getTimeStamp) ERROR \`tar' exited with return code: $exitCode" >> $log
+    exit $withSeriousIssues
+fi
+
+# Modify the user permissions and rights for the archive.
+echo "$(getTimeStamp) INFO  Modifying user permissions and rights:" >> $log
+exitCode=$(chmod -v 644 $archiveDir/$atlassianArchive >> $log)
+exitCode=$(chown -v $atlassianSoftware:users $archiveDir/$atlassianArchive >> $log)
+
+echo "$(getTimeStamp) INFO  The script has successfully finished execution." >> $log
+exit $withSuccess
+
+########## LA FINE #############################################################
+

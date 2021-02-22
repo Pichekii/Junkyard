@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<!--
+    The getElementsByTagName method returns all child elements with a given tag
+    name. Implement your own version of it as a regular non-method function that
+    takes a node and a string (the tag name) as arguments and returns an array
+    containing all descendant element nodes with the given tag name.
+
+    To find the tag name of an element, use its tagName property. But note that
+    this will return the tag name in all uppercase. Use the toLowerCase or
+    toUpperCase string method to compensate for this.
+
+    console.log(byTagName(document.body, "h1").length);
+    // → 1
+    
+    console.log(byTagName(document.body, "span").length);
+    // → 3
+
+    var para = document.querySelector("p");
+    console.log(byTagName(para, "span").length);
+    // → 2
+-->
+<html>
+    <head>
+        <title>Elements By Tag Name</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>        
+        <script>
+            function byTagName(node, tagName) {
+                var elements = [];
+                
+                elements = search(node, tagName.toUpperCase());
+                
+                return elements;
+            };
+            
+            function search(node, tagName) {
+                var elements = [];
+                var children = node.childNodes;
+                
+                for(var index = 0; index < children.length; index++) {
+                    var childNode = children[index];
+                    
+                    if(childNode.nodeType === document.ELEMENT_NODE) {
+                        if(childNode.nodeName === tagName) {
+                            elements.push(childNode);
+                        }
+                        
+                        if(childNode.childNodes.length !== 0) {
+                            var results = search(childNode, tagName);
+                            if(results.length !== 0) {
+                                elements = elements.concat(results);
+                            }
+                        }
+                    }
+                }
+                
+                return elements;
+            };
+        </script>
+        
+        <h1>Heading with a <span>span</span> element.</h1>
+        <p>A paragraph with <span>one</span>, <span>two</span> spans.</p>
+        
+        <script>
+            console.log("Number of H1 tags in the body tag: " + byTagName(document.body, "h1").length);
+            console.log("Number of SPAN tags in the body tag: " + byTagName(document.body, "span").length);
+            
+            var paragraph = document.querySelector("p");
+            console.log("Number of SPAN tags in the paragraph tag: " + byTagName(paragraph, "span").length);
+        </script>
+    </body>
+</html>

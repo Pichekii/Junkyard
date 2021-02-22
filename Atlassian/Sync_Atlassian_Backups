@@ -1,0 +1,124 @@
+#!/usr/bin/env bash
+
+################################################################################
+#
+# Created On:       26 June 2013
+# Last Modified:    02 July 2013
+#
+# Author(s):        Scott Natelli
+#
+# Allows for copying the back up archive files (.tar.gz) created for the
+# Atlassian products to a secondary location.
+#
+# Access needs to be provided to the vsftpd user account through the `mount'
+# command with the bind option:
+#       mount --bind /path/to/archives /home/vsftpd/archives
+#
+################################################################################
+
+########## GLOBAL VARIABLES ####################################################
+
+# @var withSuccess       Status code indictaing success during execution.
+# @var withSeriousIssues Status code indictaing serious trouble during execution.
+declare -i withSuccess=0
+declare -i withSeriousIssues=2
+
+# @var propertiesFile File containing the variable settings for the backup.
+propertiesFile=".Sync_Atlassian_Backups.properties"
+
+# @var logDir Path for the log file.
+# @var log    Log file for the script.
+logDir="../log"
+log=${logDir}"/Sync_Atlassian_Backups.log.G000"
+
+# @var archiveDir   Path for the backup archive to be created.
+# @var primaryHost  Hostname for the primary host the backups are located on.
+declare archiveDir
+declare primaryHost
+
+# @var ftpUser      The user name for the vsftpd user account.
+# @var ftpPassword  The password for the vsftpd user account.
+# @var ftpDir       Path for the archives in the vsftpd user directory.
+declare ftpUser
+declare ftpPassword
+declare ftpDir
+
+########## MAIN ################################################################
+
+# Setting the working directory; necessary if the script is run from cron.
+cd $(dirname $0)
+
+# Import the common ALM functions.
+source ./ALM_Commons
+
+# Check for the log directory.
+if [[ ! -d $logDir ]]; then
+    mkdir $logDir
+fi
+
+# Initialize the log entry.
+lineBreak 90 "*" >> $log
+echo "$(getTimeStamp) INFO  The script is beginning execution." >> $log
+
+# Retrieve the Atlassian information for the back up.
+if [[ ! -e $propertiesFile ]]; then
+    echo "$(getTimeStamp) ERROR The $properties file does not exist." >> $log
+    exit $withSeriousIssues
+else
+    properties=( $(cat $propertiesFile) )
+    primaryHost=${properties[0]}
+    ftpUser=${properties[1]}
+    ftpPassword=${properties[2]}
+    ftpDir=${properties[3]}
+    archiveDir=${properties[4]}
+fi
+
+# Check that the archive directory for the backups exists.
+if [[ ! -d $archiveDir ]]; then
+    echo "$(getTimeStamp) INFO  The $archiveDir directory does not exist." >> $log
+    echo "$(getTimeStamp) INFO  Creating the $archiveDir for the backups." >> $log
+    exitCode=$(mkdir $archiveDir)
+    
+    if [[ $exitCode -eq 0 ]]; then
+        echo "$(getTimeStamp) INFO  Successfully created the archive directory." >> $log
+    else
+        echo "$(getTimeStamp) ERROR Could not create the archive directory." >> $log
+        echo "$(getTimeStamp) ERROR \`mkdir' exited with return code: $exitCode" >> $log
+        exit $withSeriousIssues
+    fi
+fi
+
+# Check if the primary host for the Atlassian backups is available.
+exitCode=$(ping -q -t 15 -c 1 $primaryHost &>/dev/null)
+
+if [[ $exitCode -eq 0 ]]; then
+    echo "$(getTimeStamp) INFO  The host, $primaryHost, is reachable." >> $log
+else
+    echo "$(getTimeStamp) ERROR The host, $primaryHost, is NOT reachable." >> $log
+    echo "$(getTimeStamp) ERROR The script will now exit." >> $log
+    exit $withMinorIssues
+fi
+
+# Copy the backup archive files from the primary host.
+echo "$(getTimeStamp) INFO  Attempting to copy the archive files from the primary host." >> $log
+
+lftp << END_LFTP >> $log
+open -u $ftpUser,$ftpPassword $primaryHost
+cd $ftpDir
+mirror -n -v --allow-chown ./ $archiveDir
+quit
+END_LFTP
+
+if [[ $exitCode -eq 0 ]]; then
+    echo "$(getTimeStamp) INFO  Successfully copied the archive files from the primary host." >> $log
+else
+    echo "$(getTimeStamp) ERROR Could not copy the archive files from the primary host." >> $log
+    echo "$(getTimeStamp) ERROR \`lftp' exited with return code: $exitCode" >> $log
+    exit $withSeriousIssues
+fi
+
+echo "$(getTimeStamp) INFO  The script has successfully finished execution." >> $log
+exit $withSuccess
+
+########## LA FINE #############################################################
+

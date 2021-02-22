@@ -1,0 +1,16 @@
+h1. Overview
+
+The @Atlassian@ directory contains various scripts I wrote to support several
+Atlassian products.
+
+h1. Description
+
+The following section provides a brief summary of each of the files found in this directory:
+* @ALM_Commons@ - Contains common functions for the Atlassian backup scripts.
+* @Archive_Atlassian_Data@ - Archives the @data@ directory for an Atlassian product.
+* @crucible@ - Linux @service@ script for Atlassian Crucible.
+* @Cull_Atlassian_Backups@ - Culls the sets of data and database dump backups.
+* @Dump_Atlassian_Database@ - Archives a dump of the database for an Atlassian product.
+* @JIRA_Backup_Janitor@ - Culls the automatic JIRA XML backups.
+* @stash@ - Linux @service@ script for Atlassian Stash.
+* @Sync_Atlassian_Backups@ - Copies the archive files to a secondary location.

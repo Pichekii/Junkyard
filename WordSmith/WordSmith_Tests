@@ -1,0 +1,40 @@
+###############################################################################
+#
+# This script runs the word puzzle using test words through the time command.
+#
+# Author:   Scott Natelli
+#
+###############################################################################
+
+######### VARIABLES ###########################################################
+javaCommand="java -jar WordSmith.jar"
+testResults="./Test_Results.txt"
+
+declare -a sampleWord=( "ABAB" "AAAB" "BAAA" "QUESTION" "BOOKKEEPER" "STATIONARILY" "ANTIROYALIST" "ELECTROENCEPHALOGRAPH" "SPECTROHELIOKINEMATOGRAPH" )
+
+######### FUNCTIONS ###########################################################
+
+function horizontalRule {
+    echo ""    
+    for (( column=0; column < $1; column++ )); do
+        echo -n "*"
+    done
+    echo ""
+}
+
+######### MAIN ################################################################
+
+# Change the working directory.
+cd $(dirname $0)
+
+arrayLength=${#sampleWord[@]}
+
+for (( index=0; index < $arrayLength; index++ )); do
+    echo -en "\nThe results from the \`time' command:" >> $testResults
+	answer=$( { time ${javaCommand} ${sampleWord[$index]} ; } 2>> $testResults)
+    echo -e "\nThe test word is: ${sampleWord[$index]}" >> $testResults
+    echo "The rank of the word is: $answer" >> $testResults
+    horizontalRule 80 >> $testResults
+done
+
+###############################################################################

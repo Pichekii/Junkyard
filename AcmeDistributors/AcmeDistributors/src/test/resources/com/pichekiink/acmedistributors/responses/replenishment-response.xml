@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ReplenishResponse>
+    <!—SUCCESS, FAIL, PARTIAL -->
+    <Status>SUCCESS</Status>
+    <Details>Products shipping soon.</Details>
+</ReplenishResponse>

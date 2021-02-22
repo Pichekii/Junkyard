@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<!--
+    We built plain-text tables in Chapter 6. HTML makes laying out tables quite
+    a bit easier. An HTML table is built with the following tag structure:
+
+        <table>
+            <tr>
+                <th>name</th>
+                <th>height</th>
+                <th>country</th>
+            </tr>
+            <tr>
+                <td>Kilimanjaro</td>
+                <td>5895</td>
+                <td>Tanzania</td>
+            </tr>
+        </table>
+
+    For each row, the <table> tag contains a <tr> tag. Inside of these <tr> tags,
+    we can put cell elements: either heading cells (<th>) or regular cells (<td>).
+
+    The same source data that was used in Chapter 6 is again available in the
+    MOUNTAINS variable in the sandbox. It can also be downloaded from the website.
+
+    Write a function buildTable that, given an array of objects that all have
+    the same set of properties, builds up a DOM structure representing a table.
+    The table should have a header row with the property names wrapped in <th>
+    elements and should have one subsequent row per object in the array, with
+    its property values in <td> elements.
+
+    The Object.keys function, which returns an array containing the property
+    names that an object has, will probably be helpful here.
+
+    Once you have the basics working, right-align cells containing numbers by
+    setting their style.textAlign property to "right".
+-->
+<html>
+    <head>
+        <title>Build A Table</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <!-- Import the array of mountains. -->
+        <script src="mountains.js"></script>
+        
+        <!-- Defines a cleaner look for tables -->
+        <style>
+            table  { border-collapse: collapse; }
+            td, th { border: 1px solid black; padding: 3px 8px; }
+            th     { text-align: left; }
+        </style>
+    </head>
+    <body>
+        <script>
+            function buildTable(mountains) {
+                var table = document.createElement("table");
+                
+                appendTableHeader(mountains, table);
+                appendTableContents(mountains, table);
+                
+                return table;
+            }
+            
+            function appendTableHeader(mountains, table) {
+                var headerRow = document.createElement("tr");
+                var fields = Object.keys(mountains[0]);
+                
+                for(var index = 0; index < fields.length; index++) {
+                    var cell = document.createElement("th");
+                    cell.textContent = fields[index];
+                    headerRow.appendChild(cell);
+                }
+                
+                table.appendChild(headerRow);
+            }
+            
+            function appendTableContents(mountains, table) {
+                for(var index = 0; index < mountains.length; index++) {
+                    var row = document.createElement("tr");
+                    
+                    for(var property in mountains[index]) {
+                        var cell = document.createElement("td");
+                        var propertyContent = mountains[index][property];
+                        
+                        cell.textContent = propertyContent;
+                        
+                        if(typeof propertyContent === "number") {
+                            cell.style.textAlign = "right";
+                        }
+                        
+                        row.appendChild(cell);
+                    }
+                    
+                    table.appendChild(row);
+                }
+            }
+            
+            document.body.appendChild(buildTable(MOUNTAINS))
+        </script>
+    </body>
+</html>

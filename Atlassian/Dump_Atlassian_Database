@@ -1,0 +1,113 @@
+#!/usr/bin/env bash
+
+################################################################################
+#
+# Created On:       30 June 2013
+# Last Modified:    03 July 2013
+#
+# Author(s):        Scott Natelli
+#
+# Backs up the Atlassian software's database using the provided vendor's tool.
+#
+# Got some help from this SO post for my script:
+# http://serverfault.com/questions/376533/cron-job-failing-to-backing-up-a-postgres-database
+#
+# It wasn't the accepted answer that helped, but `-U' flag and knowing that
+# root can run the `pg_dump' command. 
+#
+################################################################################
+
+########## GLOBAL VARIABLES ####################################################
+
+# @var withSuccess       Status code indictaing success during execution.
+# @var withSeriousIssues Status code indictaing serious trouble during execution.
+declare -i withSuccess=0
+declare -i withSeriousIssues=2
+
+# @var propertiesFile File containing the variable settings for the backup.
+propertiesFile=".Dump_Atlassian_Database.properties"
+
+# @var logDir Path for the log file.
+# @var log    Log file for the script.
+logDir="../log"
+log=${logDir}"/Dump_Atlassian_Database.log.G000"
+
+# @var archiveDir         Path for the backup archive to be created.
+# @var atlassianSoftware  The name of the product being backed up.
+# @var database           The database to backup.
+# @var databaseUser       The Linux database user account.
+declare archiveDir
+declare atlassianSOftware
+declare database
+declare databaseUser
+
+########## MAIN ################################################################
+
+# Setting the working directory; necessary if the script is run from cron.
+cd $(dirname $0)
+
+# Import the common ALM functions.
+source ./ALM_Commons
+
+# Check for the log directory.
+if [[ ! -d $logDir ]]; then
+    mkdir $logDir
+fi
+
+# Initialize the log entry.
+lineBreak 90 "*" >> $log
+echo "$(getTimeStamp) INFO  The script is beginning execution." >> $log
+
+# Retrieve the Atlassian information for the back up.
+if [[ ! -e $propertiesFile ]]; then
+    echo "$(getTimeStamp) ERROR The $properties file does not exist." >> $log
+    exit $withSeriousIssues
+else
+    properties=( $(cat $propertiesFile) )
+    atlassianSoftware=${properties[0]}
+    archiveDir=${properties[1]}
+    database=${properties[2]}
+    databaseUser=${properties[3]}
+fi
+
+# Check that the archive directory for the backups exists.
+if [[ ! -d $archiveDir ]]; then
+    echo "$(getTimeStamp) INFO  The $archiveDir directory does not exist." >> $log
+    echo "$(getTimeStamp) INFO  Creating the $archiveDir for the backups." >> $log
+    exitCode=$(mkdir $archiveDir)
+    
+    if [[ $exitCode -eq 0 ]]; then
+        echo "$(getTimeStamp) INFO  Successfully created the archive directory." >> $log
+    else
+        echo "$(getTimeStamp) ERROR Could not create the archive directory." >> $log
+        echo "$(getTimeStamp) ERROR \`mkdir' exited with return code: $exitCode" >> $log
+        exit $withSeriousIssues
+    fi
+fi
+
+# Generate the name for the archive.
+dateStamp=$(date +"%Y%m%d%H%M%S")
+dumpName="atlassian-"${atlassianSoftware}"-database-dump-"${dateStamp}".gz"
+
+# Create an archive of the database dump.
+echo "$(getTimeStamp) INFO  Creating the database dump for: $database" >> $log
+exitCode=$(pg_dump -U postgres $database | gzip > $archiveDir/$dumpName)
+
+if [[ $exitCode -eq 0 ]]; then
+    echo "$(getTimeStamp) INFO  Successfully created the database dump." >> $log
+else
+    echo "$(getTimeStamp) ERROR Could not create the database dump." >> $log
+    echo "$(getTimeStamp) ERROR \`db_dump' exited with return code: $exitCode" >> $log
+    exit $withSeriousIssues
+fi
+
+# Modify the user permissions and rights for the database dump.
+echo "$(getTimeStamp) INFO  Modifying user permissions and rights:" >> $log
+exitCode=$(chmod -v 644 $archiveDir/$dumpName >> $log)
+exitCode=$(chown -v $databaseUser:users $archiveDir/$dumpName >> $log)
+
+echo "$(getTimeStamp) INFO  The script has successfully finished execution." >> $log
+exit $withSuccess
+
+########## LA FINE #############################################################
+

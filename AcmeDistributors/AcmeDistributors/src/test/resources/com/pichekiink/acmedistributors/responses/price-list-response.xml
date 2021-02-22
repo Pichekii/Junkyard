@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GetPriceListResponse>
+    <Product type="ABCDEF" price="80.00"/>
+    <Product type="GHIJKL" price="99.99"/>
+</GetPriceListResponse>

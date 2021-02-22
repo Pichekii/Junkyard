@@ -1,0 +1,9 @@
+
+h1. Project Description
+
+bq. Trivia was the goddess whom haunted crossroads and graveyards, and as well as the goddess of sorcery and witchcraft.
+
+This project just provides simple examples of features found in the Java programming language, which mainly makes use of the TestNG framework to demonstrate the features.
+
+The following list provides a high level overview of the files/folders found in this project directory:
+* @Trivia@ - The Maven project for the program.

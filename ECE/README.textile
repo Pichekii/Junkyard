@@ -1,0 +1,8 @@
+
+h1. Overview
+
+The @ECE@ directory contains programs I wrote for the @EE 312@ course
+provided by the @ECE@ department at The University of Texas at Austin.
+
+The programs do not include project files for an IDE; they are solely C/C++
+files that can executed from an interpreter like "CINT":http://root.cern.ch/drupal/content/cint.

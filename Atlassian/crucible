@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+# chkconfig: 2345 80 05
+# description: Atlassian Crucible service script.
+
+################################################################################
+#
+# Created On:       01 February 2014
+# Last Modified:    22 February 2014
+#
+# Author(s):        Scott Natelli
+#
+# Linux service controller script for Atlassian Crucible.
+#
+################################################################################
+
+# @var binDirPath The path to the Crucible `bin' directory.
+binDirPath=""
+
+# @var JVM_SUPPORT_RECOMMENDED_ARGS Used to pass user defined JVM settings to Crucible.
+JVM_SUPPORT_RECOMMENDED_ARGS="-Dfile.encoding=UTF-8"
+
+# Sets the Crucible data directory; the Crucible team calls it `instance'.
+export FISHEYE_INST=""
+export PATH=$PATH:$FISHEYE_INST
+
+# Setting the FISHEYE_OPTS variable with the `JVM_SUPPORT_RECOMMENDED_ARGS' variable.
+export FISHEYE_OPTS="${FISHEYE_OPTS} ${JVM_SUPPORT_RECOMMENDED_ARGS}"
+export PATH=$PATH:$FISHEYE_OPTS
+
+# Change the `pwd' to the Crucible installastion directory.
+cd $binDirPath
+
+# Check the CLI argument; only `start', `stop', & `restart' are acceptable arguments.
+case "$1" in
+    start)
+        ./start.sh
+        ;;
+    stop)
+        ./stop.sh
+        ;;
+    restart)
+        ./stop.sh
+        ./start.sh
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart}"
+        exit 1
+        ;;
+esac
+
+################################################################################
+

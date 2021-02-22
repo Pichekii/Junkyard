@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+
+################################################################################
+#
+# Created On:       01 May 2013
+# Last Modified:    01 May 2013
+#
+# Author(s):        Scott Natelli
+#
+# Contains common functions needed by the ALM scripts.
+#
+################################################################################
+
+########## FUNCTIONS ###########################################################
+
+# The function returns a time stamp in the following format:
+#     [YYYYMMDD HH:MM:SS TimeZone]
+function getTimeStamp() {
+    echo "[$(date +"%Y%m%d %H:%M:%S %Z")]"
+}
+
+# The function outputs a line break.
+# @param $1 The column number to print an asterick up to.
+# @param $2 The character to display for the line break.
+function lineBreak() {
+    column=$1
+    character=$2
+
+    for ((index=0; index < column; index++)); do
+        echo -n "$character"
+    done
+
+    echo
+}
+
+########## LA FINE #############################################################
+

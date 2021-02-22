@@ -1,0 +1,6 @@
+PRODUCT            PRICE             QUANTITY
+Apple              0.75              125
+Orange             0.80              218
+Pear               0.99              116
+Pineapple          1.75              45
+Watermelon         1.15              20

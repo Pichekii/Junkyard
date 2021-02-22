@@ -1,0 +1,23 @@
+h1. Overview
+
+The @Junkyard@ repository is a collection of projects I have worked on at some
+point or another, which may be in various states of completion.
+
+The repository contains projects from school, examples from tutorials, interview
+questions, projects I created for work, etc. Basically, if it ends up in here,
+then I'm no longer working on it or I don't have any practical use for it.
+
+h1. Description
+
+The following section provides a brief summary of each of the files or folders
+found in this directory:
+* @AcmeDistributors@ - Example project demonstrating OO and REST concepts.
+* @Atlassian@ - Contains scripts for supporting the Atlassian products.
+* @CharacterPyramid@ - Displays a symmetric pyramid composed of characters on STDOUT.
+* @ECE@ - Contains programs from The University of Texas at Austin @ECE@ school.
+* @Eloquent JavaScript@ - Contains solutions to the problems in the @Eloquent JavaScript@ book.
+* @JavaEExample@ - A Maven project demonstrating simple JavaEE concepts.
+* @ProductBackstock@ - Displays an ordered subset of grocery products from a text file.
+* @TargetPractice@ - A Maven project that determines which of two coordinates is being shot at.
+* @Trivia@ - Contains a Maven project demonstrating various features in the Java programming language.
+* @WordSmith@ - Determines the alphabetical rank of a word based on its character set.

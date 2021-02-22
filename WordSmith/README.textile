@@ -1,0 +1,31 @@
+
+h1. Project Description
+
+The following list provides a high level overview of the files/folders found in this project directory:
+* @NetBeansProject@ - The NetBeans project for the program.
+* @References@ - Contains local copies of the materials listed in my @References@ section.
+* @Permutation_Algorithm.pdf@ - My notes for the algorithm used in the program.
+* @Test_Results.txt@ - The output of the @WordSmith_Tests@ script.
+* @WordSmith_Problem_Statement.pdf@ - The problem statement for the program.
+* @WordSmith_Tests@ - A BASH script that runs several tests against the program.
+
+h1. Algorithm Description
+
+The following is a high-level description of the algorithm, not including the validation checks:
+
+# Alphabetically sort the word.
+# Calculate the alphabetical value of each different letter in the word.
+# Calculate the number of times a letter occurs in the word.
+# Find the summation of @(n/d)*p@ for each letter in the word.
+# Add 1 to the summation.
+
+Where:
+* @n@ = the number of remaining letters the current letter is alphabetically greater than
+* @d@ = the product of the factorial of each letter's occurrence
+* @p@ = the factorial of the number of remaining letters in the word
+
+h1. References
+
+# A "tutorial":http://home.avvanta.com/~math/permutations2.html on permutations.
+# A permutation "example":http://mathforum.org/library/drmath/view/63330.html using the word @FOCUS@.
+# An "example":https://www.youtube.com/watch?v=n0N3lO3ZI8A demonstrating the algorithm used to solve the rank of a word.

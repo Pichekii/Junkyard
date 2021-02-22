@@ -1,0 +1,10 @@
+
+h1. Overview
+
+The @Eloquent JavaScript@ directory contains my solutions to the problems found
+in the online @Eloquent JavaScript@ book.
+
+h1. References
+
+# "Eloquent JavaScript":http://eloquentjavascript.net/ is an online book about JavaScript.
+# "Mozilla Rhino":https://developer.mozilla.org/en-US/docs/Mozilla/Projects/Rhino is the interpreter I used to execute the scripts.

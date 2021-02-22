@@ -1,0 +1,99 @@
+#!/usr/bin/env bash
+
+################################################################################
+#
+# Created On:       02 July 2013
+# Last Modified:    28 October 2013
+#
+# Author(s):        Scott Natelli
+#
+# Deletes any archive files or database dump files for the Atlassian backups
+# that is older than 14 days.
+#
+################################################################################
+
+########## GLOBAL VARIABLES ####################################################
+
+# @var withSuccess        Status code indictaing success during execution.
+# @var withSeriousIssues  Status code indictaing serious trouble during execution.
+declare -i withSuccess=0
+declare -i withSeriousIssues=2
+
+# @var numberOfBackups   The number of backup files to keep.
+declare numberOfBackups=14
+
+# @var archiveDir         Path to the backup archive.
+# @var atlassianDataDir   Name of the directory containing the data directory.
+# @var atlassianDumpDir   Name of the directory containing the database dumps.
+declare archiveDir="path/to/archives"
+declare atlassianDataDir="data"
+declare atlassianDumpDir="dumps"
+
+# @var archiveRegex   Regular expression for the Atlassian archive file.
+# @var dumpRegex      Regular expression for the Atlassian dump file.
+declare archiveRegex="atlassian-(jira|stash|crucible|confluence)-data-[0-9]*.tar.gz"
+declare dumpRegex="atlassian-(jira|stash|crucible|confluence)-database-dump-[0-9]*.gz"
+
+# @var atlassianBackups   Array to hold the list of backup files.
+declare -a atlassianBackups
+
+########## FUNCTIONS ###########################################################
+
+# Iterates through the backup files, removing any file that is older than 14 days.
+function cullBackups() {
+
+    local numberOfBackupFiles=${#atlassianBackups[@]}
+    local index=0
+
+    while [[ $numberOfBackupFiles -gt $numberOfBackups ]]; do
+        rm ${atlassianBackups[$index]}
+        ((numberOfBackupFiles--))
+        ((index++))
+    done
+}
+
+# Populates the $atlassianBackups array with the files in the specific directory.
+# @param $1 The backup directory to cull.
+# @param $2 A regular expression used to filter out non-standard backup files.
+function getListOfFiles() {
+
+    local regex=$1
+    local completeFileList=($archiveDir/$2/*)
+    local listSize=${#completeFileList[@]}
+
+    for ((index=0; index < listSize; index++)); do
+        atlassianBackups=(${atlassianBackups[@]} $(echo ${completeFileList[$index]} | egrep $regex))
+    done
+}
+
+########## MAIN ################################################################
+
+# Setting the working directory; necessary if the script is run from cron.
+cd $(dirname $0)
+
+# Check for the Atlassian software data directory.
+if [[ ! -d $archiveDir ]]; then
+    exit $withSeriousIssues
+fi
+
+# Cull the archive files.
+getListOfFiles $archiveRegex $atlassianDataDir
+
+if [[ ${#atlassianBackups[@]} -gt $numberOfBackups ]]; then
+    cullBackups
+fi
+
+# Nullify the array.
+unset atlassianBackups
+
+# Cull the database dumps.
+getListOfFiles $dumpRegex $atlassianDumpDir
+
+if [[ ${#atlassianBackups[@]} -gt $numberOfBackups ]]; then
+    cullBackups
+fi
+
+exit $withSuccess
+
+########## LA FINE #############################################################
+

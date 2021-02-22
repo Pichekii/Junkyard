@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# chkconfig: 2345 80 05
+# description: Atlassian Stash service script.
+
+################################################################################
+#
+# Created On:       01 February 2014
+# Last Modified:    22 February 2014
+#
+# Author(s):        Scott Natelli
+#
+# Linux service controller script for Atlassian Stash.
+#
+################################################################################
+
+# @var binDirPath The path to the Stash `bin' directory.
+binDirPath=""
+
+# Change the `pwd' to the Stash installastion directory.
+cd $binDirPath
+
+# Check the CLI argument; only `start', `stop', and restart are acceptable arguments.
+case "$1" in
+    start)
+        ./start-stash.sh
+        ;;
+    stop)
+        ./stop-stash.sh
+        ;;
+    restart)
+        ./stop.sh
+        ./start.sh
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart}"
+        exit 1
+        ;;
+esac
+
+################################################################################
+
